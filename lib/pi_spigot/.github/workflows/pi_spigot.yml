@@ -1,0 +1,126 @@
+﻿# -----------------------------------------------------
+#  Copyright Iliass Mahjoub 2022 - 2023.
+#  Copyright Christopher Kormanyos 2019 - 2023.
+#  Distributed under the Boost Software License,
+#  Version 1.0. (See accompanying file LICENSE_1_0.txt
+#  or copy at http://www.boost.org/LICENSE_1_0.txt)
+# -----------------------------------------------------
+
+name: pi_spigot
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+jobs:
+  gcc-clang-native:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ c++20, c++2b ]
+        compiler: [ g++-12, clang++-14 ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run: sudo apt install g++-12 clang-14
+      - name: gcc-clang-native
+        run: |
+          echo "gcc-clang-native"
+          echo "${{ matrix.compiler }} -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -O3 -std=${{ matrix.standard }} pi_spigot.cpp -I. -o pi_spigot.exe"
+          ${{ matrix.compiler }} -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -O3 -std=${{ matrix.standard }} pi_spigot.cpp -I. -o pi_spigot.exe
+          echo "ls ./pi_spigot.exe"
+          ls -la ./pi_spigot.exe
+          ./pi_spigot.exe
+  apple-gcc-clang-native:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ c++20, c++2b ]
+        compiler: [ g++, clang++ ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: apple-gcc-clang-native
+        run: |
+          echo "apple-gcc-clang-native"
+          echo "${{ matrix.compiler }} -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -O3 -std=${{ matrix.standard }} pi_spigot.cpp -I. -o pi_spigot.exe"
+          ${{ matrix.compiler }} -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -O3 -std=${{ matrix.standard }} pi_spigot.cpp -I. -o pi_spigot.exe
+          echo "ls ./pi_spigot.exe"
+          ls -la ./pi_spigot.exe
+          ./pi_spigot.exe
+  gnumake-clang-tidy-12-native:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ c++20 ]
+        compiler: [ g++, clang++ ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run:
+          sudo apt install clang clang-tidy
+      - name: gnumake-clang-tidy-12-native
+        run: |
+          echo "+++ print clang-tidy version"
+          clang-tidy --version
+          echo "+++ running clang-tidy"
+          #clang-tidy -checks="*,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-llvm-header-guard,-cppcoreguidelines-pro-bounds-constant-array-index,-fuchsia-*,-readability-identifier-naming,-cppcoreguidelines-non-private-member-variables-in-classes" --extra-arg=-std=${{ matrix.standard }} pi_spigot.cpp -- -I. -isystem*usr/lib*
+          clang-tidy -checks="*,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-llvm-header-guard,-cppcoreguidelines-pro-bounds-constant-array-index,-fuchsia-*,-readability-identifier-naming,-cppcoreguidelines-non-private-member-variables-in-classes" --extra-arg-before=--driver-mode=g++ pi_spigot.cpp -- ${{ matrix.compiler }} -std=${{ matrix.standard }} -O3 -Wall -Wextra -Wconversion -Wsign-conversion -I. -isystem*usr/lib*
+  msvc-release-x64-vs2022:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - uses: actions/checkout@v1
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: msvc-release-x64-vs2022
+        shell: cmd
+        working-directory: ./
+        run: |
+          set INCLUDE=%cd%;%INCLUDE%
+          MSBuild -m pi_spigot.sln -p:useenv=true -p:Configuration=Release -p:Platform=x64 /t:Rebuild
+          dir %cd%\Out\Bin\Release\pi_spigot.exe
+          %cd%\Out\Bin\Release\pi_spigot.exe
+  valgrind-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ c++2a ]
+        compiler: [ g++-12]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run: sudo apt-get install g++-12 valgrind
+      - name: valgrind-check
+        run: |
+          echo "+++ compile"
+          ${{ matrix.compiler }} -v
+          ${{ matrix.compiler }} -m64 -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -O3 -std=${{ matrix.standard }} pi_spigot.cpp -I. -o pi_spigot.exe
+          echo "+++ run valgrind"
+          valgrind --leak-check=yes --log-file=pi_spigot_valgrind.txt ./pi_spigot.exe
+          grep '0 bytes in 0 blocks' pi_spigot_valgrind.txt
+          grep '0 errors from 0 contexts' pi_spigot_valgrind.txt

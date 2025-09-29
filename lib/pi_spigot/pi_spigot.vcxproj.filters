@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\pi_spigot">
+      <UniqueIdentifier>{54477658-e81d-4d11-a665-f5033d87cad9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pi_spigot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="codecov.yml">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include=".clang-tidy">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="sonar-project.properties">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include=".codacy.yml">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pi_spigot\pi_spigot.h">
+      <Filter>Source Files\pi_spigot</Filter>
+    </ClInclude>
+    <ClInclude Include="pi_spigot\pi_spigot_ctrl.h">
+      <Filter>Source Files\pi_spigot</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="LICENSE_1_0.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
