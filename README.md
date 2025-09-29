@@ -1,6 +1,6 @@
 # FreeRTOS
-Project untuk belajar FreeRTOS di Raspberry Pi Pico
+Project for learn FreeRTOS in Raspberry Pi Pico
 
-## Fitur
+## Feature
 1. Blink LED
 2. Task Switching
