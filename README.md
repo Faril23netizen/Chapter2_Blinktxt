@@ -1,7 +1,7 @@
 # FreeRTOS Class
 Project untuk belajar FreeRTOS di Raspberry Pi Pico
 
-## Fitur
+Fitur
 - Blink LED
 - Task Switching
 
